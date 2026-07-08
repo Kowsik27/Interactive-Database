@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="DBChat AI — Chat with your MySQL database in plain English. AI-powered natural language to SQL using IBM Granite." />
+  <meta name="theme-color" content="#6366f1" />
+  <title>DBChat AI — Chat with Your Database</title>
+
+  <!-- Inline SVG favicon — no external file needed -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Cellipse cx='16' cy='12' rx='10' ry='3.5' fill='rgba(255,255,255,0.92)'/%3E%3Cpath d='M6 12v4c0 1.9 4.5 3.5 10 3.5s10-1.6 10-3.5v-4c0 1.9-4.5 3.5-10 3.5S6 13.9 6 12z' fill='rgba(255,255,255,0.55)'/%3E%3Cpath d='M6 16v4c0 1.9 4.5 3.5 10 3.5s10-1.6 10-3.5v-4c0 1.9-4.5 3.5-10 3.5S6 17.9 6 16z' fill='rgba(255,255,255,0.3)'/%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='32' y2='32'%3E%3Cstop offset='0%25' stop-color='%236366f1'/%3E%3Cstop offset='100%25' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E" />
+
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════
+       CONNECTION SCREEN
+       Shown on first load. Hidden after successful connect.
+  ════════════════════════════════════════════════════ -->
+  <div id="connection-screen" class="screen active">
+    <div class="connect-container">
+
+      <!-- Logo & Branding -->
+      <div class="connect-header">
+        <div class="logo">
+          <div class="logo-icon">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="40" height="40" rx="10" fill="url(#gradient)"/>
+              <path d="M20 8C13.4 8 8 11.1 8 15v10c0 3.9 5.4 7 12 7s12-3.1 12-7V15c0-3.9-5.4-7-12-7z" fill="rgba(255,255,255,0.15)"/>
+              <ellipse cx="20" cy="15" rx="12" ry="4.5" fill="rgba(255,255,255,0.9)"/>
+              <path d="M8 15v4c0 2.5 5.4 4.5 12 4.5s12-2 12-4.5v-4c0 2.5-5.4 4.5-12 4.5S8 17.5 8 15z" fill="rgba(255,255,255,0.6)"/>
+              <path d="M8 19v4c0 2.5 5.4 4.5 12 4.5s12-2 12-4.5v-4c0 2.5-5.4 4.5-12 4.5S8 21.5 8 19z" fill="rgba(255,255,255,0.35)"/>
+              <defs>
+                <linearGradient id="gradient" x1="0" y1="0" x2="40" y2="40">
+                  <stop offset="0%" stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#8b5cf6"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <span class="logo-text">DBChat <span class="logo-ai">AI</span></span>
+        </div>
+        <p class="connect-tagline">Chat with your MySQL database in plain English</p>
+      </div>
+
+      <!-- Connection Form -->
+      <div class="connect-card">
+        <h2 class="connect-card-title">Connect to Database</h2>
+
+        <div id="connect-error" class="alert alert-error hidden"></div>
+
+        <form id="connection-form" novalidate>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="db-host">Host</label>
+              <input id="db-host" class="form-input" type="text" value="localhost"
+                     placeholder="localhost" autocomplete="off" spellcheck="false" />
+            </div>
+            <div class="form-group form-group--small">
+              <label class="form-label" for="db-port">Port</label>
+              <input id="db-port" class="form-input" type="number" value="3306"
+                     placeholder="3306" min="1" max="65535" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="db-username">Username</label>
+            <input id="db-username" class="form-input" type="text" value="root"
+                   placeholder="root" autocomplete="username" spellcheck="false" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="db-password">Password</label>
+            <div class="input-wrapper">
+              <input id="db-password" class="form-input" type="password"
+                     placeholder="Enter password" autocomplete="current-password" />
+              <button type="button" class="input-toggle-btn" id="toggle-password" aria-label="Toggle password visibility">
+                <svg class="eye-icon" id="eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="eye-icon hidden" id="eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="db-database">Database Name</label>
+            <input id="db-database" class="form-input" type="text"
+                   placeholder="mydb" autocomplete="off" spellcheck="false" />
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full" id="connect-btn">
+            <span class="btn-text">Connect to Database</span>
+            <span class="btn-spinner hidden"></span>
+          </button>
+
+        </form>
+
+        <p class="connect-footer-note">
+          Your credentials are used only to connect. They are never stored or transmitted beyond this session.
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       CHAT APPLICATION SHELL
+       Hidden until connected. This is the main UI.
+  ════════════════════════════════════════════════════ -->
+  <div id="app-screen" class="screen">
+
+    <!-- ── Sidebar ─────────────────────────────────────── -->
+    <aside class="sidebar" id="sidebar">
+
+      <!-- Sidebar Header -->
+      <div class="sidebar-header">
+        <div class="logo logo--small">
+          <div class="logo-icon logo-icon--small">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="40" height="40" rx="10" fill="url(#gradient2)"/>
+              <ellipse cx="20" cy="15" rx="12" ry="4.5" fill="rgba(255,255,255,0.9)"/>
+              <path d="M8 15v4c0 2.5 5.4 4.5 12 4.5s12-2 12-4.5v-4c0 2.5-5.4 4.5-12 4.5S8 17.5 8 15z" fill="rgba(255,255,255,0.5)"/>
+              <defs>
+                <linearGradient id="gradient2" x1="0" y1="0" x2="40" y2="40">
+                  <stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <span class="logo-text">DBChat <span class="logo-ai">AI</span></span>
+        </div>
+        <button class="sidebar-close-btn" id="sidebar-close" aria-label="Close sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+
+      <!-- New Chat Button -->
+      <button class="btn btn-new-chat" id="new-chat-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        New Chat
+      </button>
+
+      <!-- Connected Database -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">Connected Database</div>
+        <div class="db-badge" id="db-badge">
+          <div class="db-badge-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <div class="db-badge-info">
+            <span class="db-badge-name" id="sidebar-db-name">—</span>
+            <span class="db-badge-host" id="sidebar-db-host">—</span>
+          </div>
+          <div class="db-badge-status connected" id="db-status-dot"></div>
+        </div>
+      </div>
+
+      <!-- Tables -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-label">
+          Tables
+          <span class="badge" id="table-count-badge">0</span>
+        </div>
+        <div class="table-list" id="table-list">
+          <!-- Populated by sidebar.js -->
+        </div>
+      </div>
+
+      <!-- Chat History -->
+      <div class="sidebar-section sidebar-section--grow">
+        <div class="sidebar-section-label">Chat Sessions</div>
+        <div class="session-list" id="session-list">
+          <!-- Populated by sidebar.js -->
+        </div>
+      </div>
+
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <button class="btn btn-disconnect" id="disconnect-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Disconnect
+        </button>
+        <button class="btn btn-icon btn-theme" id="theme-toggle" aria-label="Toggle theme">
+          <svg class="icon-sun hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- ── Main Content ─────────────────────────────────── -->
+    <main class="main-content">
+
+      <!-- Top Bar (mobile) -->
+      <header class="topbar">
+        <button class="btn btn-icon" id="sidebar-open" aria-label="Open sidebar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <span class="topbar-title" id="topbar-title">DBChat AI</span>
+        <div class="topbar-actions">
+          <span class="topbar-db" id="topbar-db"></span>
+        </div>
+      </header>
+
+      <!-- Chat Messages Area -->
+      <div class="chat-area" id="chat-area">
+
+        <!-- Welcome State (shown when chat is empty) -->
+        <div class="welcome-state" id="welcome-state">
+          <div class="welcome-icon">
+            <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="64" height="64" rx="16" fill="url(#wg)"/>
+              <ellipse cx="32" cy="22" rx="16" ry="6" fill="rgba(255,255,255,0.9)"/>
+              <path d="M16 22v6c0 3.3 7.2 6 16 6s16-2.7 16-6v-6c0 3.3-7.2 6-16 6s-16-2.7-16-6z" fill="rgba(255,255,255,0.55)"/>
+              <path d="M16 28v6c0 3.3 7.2 6 16 6s16-2.7 16-6v-6c0 3.3-7.2 6-16 6s-16-2.7-16-6z" fill="rgba(255,255,255,0.3)"/>
+              <defs><linearGradient id="wg" x1="0" y1="0" x2="64" y2="64"><stop offset="0%" stop-color="#6366f1"/><stop offset="100%" stop-color="#8b5cf6"/></linearGradient></defs>
+            </svg>
+          </div>
+          <h2 class="welcome-title">Ask anything about your database</h2>
+          <p class="welcome-subtitle" id="welcome-subtitle">Connected to <strong id="welcome-db-name">—</strong></p>
+          <div class="suggestion-chips" id="suggestion-chips">
+            <!-- Populated dynamically based on schema -->
+          </div>
+        </div>
+
+        <!-- Messages will be injected here by chat.js -->
+        <div class="messages-container" id="messages-container"></div>
+
+      </div>
+
+      <!-- Input Area -->
+      <div class="input-area">
+        <div class="input-wrapper-outer">
+          <textarea
+            id="chat-input"
+            class="chat-input"
+            placeholder="Ask anything about your database..."
+            rows="1"
+            maxlength="2000"
+          ></textarea>
+          <div class="input-actions">
+            <span class="char-count" id="char-count">0/2000</span>
+            <button class="btn btn-send" id="send-btn" disabled aria-label="Send message">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+        <p class="input-disclaimer">
+          DBChat AI generates read-only SELECT queries. No data is ever modified.
+        </p>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       TOAST NOTIFICATION CONTAINER
+  ════════════════════════════════════════════════════ -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- ═══════════════════════════════════════════════════
+       SCRIPTS — order matters (components before app)
+  ════════════════════════════════════════════════════ -->
+  <script src="components/connection.js"></script>
+  <script src="components/sidebar.js"></script>
+  <script src="components/chat.js"></script>
+  <script src="components/results.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
