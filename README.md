@@ -1,4 +1,5 @@
-# DBChat AI — Chat with Your Database
+# Interactive-Database
+— Chat with Your Database
 
 > **An AI-powered natural language interface for MySQL databases.**
 > Ask questions in plain English. Get SQL, results, and explanations instantly.
