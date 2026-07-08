@@ -8,7 +8,7 @@
 
 ## What It Does
 
-DBChat AI connects to any MySQL database and lets you interact with it the way you'd talk to a person.
+Interactive-Database connects to any MySQL database and lets you interact with it the way you'd talk to a person.
 
 - Type: *"Show all customers who joined last month"*
 - The AI generates the SQL, executes it safely, and explains the results.
